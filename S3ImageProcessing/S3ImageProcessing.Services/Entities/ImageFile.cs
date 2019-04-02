@@ -1,4 +1,4 @@
-﻿namespace S3ImageProcessing.Data
+﻿namespace S3ImageProcessing.Services.Entities
 {
     public class ImageFile
     {

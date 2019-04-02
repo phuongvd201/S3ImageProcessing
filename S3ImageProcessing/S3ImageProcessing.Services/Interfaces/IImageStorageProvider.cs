@@ -1,4 +1,4 @@
-﻿namespace S3ImageProcessing.Abstractions
+﻿namespace S3ImageProcessing.Services.Interfaces
 {
     public interface IImageStorageProvider
     {
