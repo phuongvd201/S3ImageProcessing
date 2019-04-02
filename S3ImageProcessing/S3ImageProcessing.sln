@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3ImageProcessing", "S3ImageProcessing\S3ImageProcessing.csproj", "{DBDBF706-B47F-4FB6-982E-59FF2BE04069}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3ImageProcessing", "S3ImageProcessing\S3ImageProcessing.csproj", "{DBDBF706-B47F-4FB6-982E-59FF2BE04069}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "S3ImageProcessing.Core", "S3ImageProcessing.Core", "{E993FAF8-C810-40F2-9DCB-2581652AEF3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3ImageProcessing.Services", "S3ImageProcessing.Services\S3ImageProcessing.Services.csproj", "{516BBC1C-5D36-43D0-A951-B2D3EA1B4960}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3ImageProcessing.Services", "S3ImageProcessing.Services\S3ImageProcessing.Services.csproj", "{516BBC1C-5D36-43D0-A951-B2D3EA1B4960}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3ImageProcessing.Abstractions", "S3ImageProcessing.Abstractions\S3ImageProcessing.Abstractions.csproj", "{C42F1D45-3860-488F-A7B4-F6A3A491965F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3ImageProcessing.Abstractions", "S3ImageProcessing.Abstractions\S3ImageProcessing.Abstractions.csproj", "{C42F1D45-3860-488F-A7B4-F6A3A491965F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3ImageProcessing.Data", "S3ImageProcessing.Data\S3ImageProcessing.Data.csproj", "{F281ECF8-992F-42FB-84F4-D1210F16C454}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{C42F1D45-3860-488F-A7B4-F6A3A491965F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C42F1D45-3860-488F-A7B4-F6A3A491965F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C42F1D45-3860-488F-A7B4-F6A3A491965F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F281ECF8-992F-42FB-84F4-D1210F16C454}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F281ECF8-992F-42FB-84F4-D1210F16C454}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F281ECF8-992F-42FB-84F4-D1210F16C454}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F281ECF8-992F-42FB-84F4-D1210F16C454}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,6 +42,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{516BBC1C-5D36-43D0-A951-B2D3EA1B4960} = {E993FAF8-C810-40F2-9DCB-2581652AEF3F}
 		{C42F1D45-3860-488F-A7B4-F6A3A491965F} = {E993FAF8-C810-40F2-9DCB-2581652AEF3F}
+		{F281ECF8-992F-42FB-84F4-D1210F16C454} = {E993FAF8-C810-40F2-9DCB-2581652AEF3F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EDB6F9F3-E0C7-4012-9A75-F83DB1C5EC87}
