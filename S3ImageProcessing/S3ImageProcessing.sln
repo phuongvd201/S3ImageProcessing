@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "S3ImageProcessing.Core", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3ImageProcessing.Services", "S3ImageProcessing.Services\S3ImageProcessing.Services.csproj", "{516BBC1C-5D36-43D0-A951-B2D3EA1B4960}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3ImageProcessing.Abstractions", "S3ImageProcessing.Abstractions\S3ImageProcessing.Abstractions.csproj", "{C42F1D45-3860-488F-A7B4-F6A3A491965F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +25,17 @@ Global
 		{516BBC1C-5D36-43D0-A951-B2D3EA1B4960}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{516BBC1C-5D36-43D0-A951-B2D3EA1B4960}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{516BBC1C-5D36-43D0-A951-B2D3EA1B4960}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C42F1D45-3860-488F-A7B4-F6A3A491965F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C42F1D45-3860-488F-A7B4-F6A3A491965F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C42F1D45-3860-488F-A7B4-F6A3A491965F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C42F1D45-3860-488F-A7B4-F6A3A491965F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{516BBC1C-5D36-43D0-A951-B2D3EA1B4960} = {E993FAF8-C810-40F2-9DCB-2581652AEF3F}
+		{C42F1D45-3860-488F-A7B4-F6A3A491965F} = {E993FAF8-C810-40F2-9DCB-2581652AEF3F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EDB6F9F3-E0C7-4012-9A75-F83DB1C5EC87}
