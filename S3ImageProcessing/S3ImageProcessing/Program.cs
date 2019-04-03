@@ -36,7 +36,7 @@ namespace S3ImageProcessing
                 //.AddScoped<IRegressionEquationService, RegressionEquationService>()
                 //.AddScoped<IPredictionService, PredictionService>()
                 //.AddScoped<IAutoCompleteHandler, AutoCompleteHandler>()
-                .AddScoped<S3ImageProcessingApp>()
+                .AddSingleton<S3ImageProcessingApp>()
                 .BuildServiceProvider();
 
             serviceProvider.GetService<S3ImageProcessingApp>().Start().GetAwaiter().GetResult();
