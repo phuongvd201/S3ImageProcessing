@@ -13,30 +13,6 @@ namespace S3ImageProcessing.Services.Implementations
             _db = db;
         }
 
-        public void SaveImageFiles(ImageFile[] files)
-        {
-            string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize);" + ";SELECT LAST_INSERT_ID();";
-
-            using (var connection = _db.CreateConnection())
-            {
-                using (var transaction = connection.BeginTransaction())
-                {
-                    foreach (var file in files)
-                    {
-                        using (var command = _db.CreateCommand(sql, connection))
-                        {
-                            command
-                                .WithSqlParameter("@FileName", file.FileName)
-                                .WithSqlParameter("@FileSize", file.FileSize)
-                                .ExecuteScalar();
-                        }
-                    }
-
-                    transaction.Commit();
-                }
-            }
-        }
-
         public void SaveImageFile(ImageFile file)
         {
             string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize)";
@@ -78,20 +54,6 @@ namespace S3ImageProcessing.Services.Implementations
                     transaction.Commit();
                 }
             }
-        }
-
-        private void SaveImageHistogram(int fileId, byte bandNumber, int value)
-        {
-            string sql = @"INSERT INTO Histogram (FileID, BandNumber, Value) VALUES (@FileID, @BandNumber, @Value)";
-
-            _db.Insert(
-                sql,
-                new object[]
-                {
-                    "@FileID", fileId,
-                    "@BandNumber", bandNumber,
-                    "@Value", value,
-                });
         }
 
         public void DeleteExistingData()
