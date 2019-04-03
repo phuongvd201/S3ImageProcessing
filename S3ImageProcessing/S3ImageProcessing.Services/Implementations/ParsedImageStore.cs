@@ -1,4 +1,6 @@
-﻿using S3ImageProcessing.Data;
+﻿using System;
+
+using S3ImageProcessing.Data;
 using S3ImageProcessing.Services.Entities;
 using S3ImageProcessing.Services.Interfaces;
 
@@ -34,24 +36,40 @@ namespace S3ImageProcessing.Services.Implementations
             {
                 using (var transaction = connection.BeginTransaction())
                 {
-                    for (int i = 0; i <= histograms.Length - 1; i++)
+                    try
                     {
-                        using (var command = _dbAccess.CreateCommand(
-                            sql,
-                            connection,
-                            new object[]
-                            {
-                                "@FileID", fileId,
-                                "@BandNumber", i,
-                                "@Value", histograms[i],
-                            })
-                        )
+                        for (int i = 0; i <= histograms.Length - 1; i++)
                         {
-                            command.ExecuteNonQuery();
+                            using (var command = _dbAccess.CreateCommand(
+                                sql,
+                                connection,
+                                new object[]
+                                {
+                                    "@FileID", fileId,
+                                    "@BandNumber", i,
+                                    "@Value", histograms[i],
+                                })
+                            )
+                            {
+                                command.ExecuteNonQuery();
+                            }
                         }
-                    }
 
-                    transaction.Commit();
+                        transaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            transaction.Rollback();
+                        }
+                        catch
+                        {
+                            throw;
+                        }
+
+                        throw;
+                    }
                 }
             }
         }

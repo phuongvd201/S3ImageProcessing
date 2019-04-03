@@ -69,8 +69,6 @@ namespace S3ImageProcessing.Data
 
         private string CreateConnectionString()
         {
-            DbProviderFactories.GetProviderInvariantNames();
-
             var builder = _dbFactory.CreateConnectionStringBuilder();
 
             builder.Add("Server", _databaseOption.ServerName);
