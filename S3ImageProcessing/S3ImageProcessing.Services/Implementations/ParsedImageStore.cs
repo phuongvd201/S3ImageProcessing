@@ -38,7 +38,7 @@ namespace S3ImageProcessing.Services.Implementations
                 {
                     try
                     {
-                        for (int i = 0; i <= histograms.Length - 1; i++)
+                        for (int i = 0; i < histograms.Length; i++)
                         {
                             using (var command = _dbAccess.CreateCommand(
                                 sql,
