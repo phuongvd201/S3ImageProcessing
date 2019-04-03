@@ -25,7 +25,7 @@ namespace S3ImageProcessing.S3Bucket
             Option = option.Value;
             S3Config = new AmazonS3Config
             {
-                RegionEndpoint = !string.IsNullOrEmpty(Option.Region)
+                RegionEndpoint = !string.IsNullOrWhiteSpace(Option.Region)
                     ? RegionEndpoint.GetBySystemName(Option.Region)
                     : DefaultEndPoint,
             };
@@ -56,7 +56,7 @@ namespace S3ImageProcessing.S3Bucket
 
                 request.ContinuationToken = response.NextContinuationToken;
             }
-            while (!string.IsNullOrEmpty(response.NextContinuationToken));
+            while (!string.IsNullOrWhiteSpace(response.NextContinuationToken));
 
             return result;
         }

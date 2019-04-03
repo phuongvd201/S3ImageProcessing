@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,6 @@ namespace S3ImageProcessing
     public class S3ImageProcessingApp
     {
         private int processedCount = 0;
-        private static readonly object LockObject = new object();
 
         private readonly ILogger _logger;
         private readonly IImageStorageProvider _imageStorageProvider;
@@ -36,13 +36,13 @@ namespace S3ImageProcessing
 
             _logger.LogInformation("Started app...");
 
-            _logger.LogInformation("Start delete existing data.");
+            _logger.LogInformation("Starting delete existing data.");
             _parsedImageStore.DeleteExistingData();
-            _logger.LogInformation("Finish delete existing data.");
+            _logger.LogInformation("Finishing delete existing data.");
 
-            _logger.LogInformation("Start scan S3 images.");
+            _logger.LogInformation("Starting scan S3 images.");
             var s3Images = await _imageStorageProvider.GetJpgImageFilesAsync();
-            _logger.LogInformation("Finish scan S3 images.");
+            _logger.LogInformation("Finishing scan S3 images.");
 
             _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
 
@@ -52,7 +52,7 @@ namespace S3ImageProcessing
                 {
                     try
                     {
-                        _logger.LogInformation($"Start process {s3Image.FileName}...");
+                        _logger.LogInformation($"Starting process {s3Image.FileName}...");
 
                         _parsedImageStore.SaveImageFile(s3Image);
 
@@ -62,12 +62,9 @@ namespace S3ImageProcessing
 
                         _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
 
-                        _logger.LogInformation($"Finish process {s3Image.FileName}.");
+                        _logger.LogInformation($"Finishing process {s3Image.FileName}.");
 
-                        lock (LockObject)
-                        {
-                            processedCount++;
-                        }
+                        Interlocked.Increment(ref processedCount);
                     }
                     catch (Exception ex)
                     {

@@ -19,7 +19,7 @@ namespace S3ImageProcessing.Services.Implementations
 
                 foreach (Rgb24 pixel in pixels)
                 {
-                    var color8Bit = PixelConvertHelper.To8BitColorByte(pixel.R, pixel.G, pixel.B);
+                    var color8Bit = ColorConvertHelper.To8BitColorByte(pixel.R, pixel.G, pixel.B);
 
                     histograms[color8Bit]++;
                 }

@@ -6,7 +6,7 @@ namespace S3ImageProcessing.Data
 {
     public class DbAccess : IDbAccess
     {
-        private readonly DbProviderFactory _dbFactory;
+        private DbProviderFactory DbFactory { get; }
 
         private string ConnectionString { get; }
 
@@ -16,7 +16,7 @@ namespace S3ImageProcessing.Data
         {
             DatabaseOption = option.Value;
             ConnectionString = DatabaseOption.ConnectionString;
-            _dbFactory = DbProviderFactories.GetFactory(DatabaseOption.ProviderName);
+            DbFactory = DbProviderFactories.GetFactory(DatabaseOption.ProviderName);
         }
 
         public int Insert(string sql, params object[] parms)
@@ -48,7 +48,7 @@ namespace S3ImageProcessing.Data
 
         public DbConnection CreateAndOpenConnection()
         {
-            var connection = _dbFactory.CreateConnection();
+            var connection = DbFactory.CreateConnection();
 
             connection.ConnectionString = ConnectionString;
             connection.Open();
@@ -58,7 +58,7 @@ namespace S3ImageProcessing.Data
 
         public DbCommand CreateCommand(string sql, DbConnection conn, params object[] parms)
         {
-            var command = _dbFactory.CreateCommand();
+            var command = DbFactory.CreateCommand();
 
             command.Connection = conn;
             command.CommandText = sql;
