@@ -14,15 +14,28 @@ namespace S3ImageProcessing
 {
     class Program
     {
+        private static IServiceProvider _serviceProvider;
+
+        private static IConfiguration _configuration;
+
         static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder().SetBasePath(Path.Combine(AppContext.BaseDirectory)).AddJsonFile("appsettings.json", true, true);
+            var configurationBuilder = new ConfigurationBuilder().SetBasePath(Path.Combine(AppContext.BaseDirectory)).AddJsonFile("appsettings.json", true, true);
 
-            var configuration = builder.Build();
+            _configuration = configurationBuilder.Build();
 
+            RegisterServices(_configuration);
+
+            _serviceProvider.GetService<S3ImageProcessingApp>().Start().GetAwaiter().GetResult();
+
+            DisposeServices();
+        }
+
+        private static void RegisterServices(IConfiguration configuration)
+        {
             var serviceCollection = new ServiceCollection();
 
-            var serviceProvider = serviceCollection
+            serviceCollection
                 .AddOptions()
                 .AddLogging(opt => opt.AddConsole())
                 .Configure<S3ClientOption>(configuration.GetSection(nameof(S3ClientOption)))
@@ -32,15 +45,22 @@ namespace S3ImageProcessing
                 .AddSingleton<IImageStorageProvider, S3ImageStorageProvider>()
                 .AddSingleton<IParsedImageStore, DbParsedImageStore>()
                 .AddSingleton<IImageHistogramService, ImageHistogramService>()
+                .AddSingleton<S3ImageProcessingApp>();
 
-                //.AddScoped<IExchangeService, ExchangeService>()
-                //.AddScoped<IRegressionEquationService, RegressionEquationService>()
-                //.AddScoped<IPredictionService, PredictionService>()
-                //.AddScoped<IAutoCompleteHandler, AutoCompleteHandler>()
-                .AddSingleton<S3ImageProcessingApp>()
-                .BuildServiceProvider();
+            _serviceProvider = serviceCollection.BuildServiceProvider();
+        }
 
-            serviceProvider.GetService<S3ImageProcessingApp>().Start().GetAwaiter().GetResult();
+        private static void DisposeServices()
+        {
+            if (_serviceProvider == null)
+            {
+                return;
+            }
+
+            if (_serviceProvider is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }
