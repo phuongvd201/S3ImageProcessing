@@ -35,7 +35,13 @@ namespace S3ImageProcessing
         {
             try
             {
+                _logger.LogInformation("Started app...");
+
+                _logger.LogInformation("Start delete existing data.");
+
                 _parsedImageStore.DeleteExistingData();
+
+                _logger.LogInformation("Finish delete existing data.");
 
                 var s3Images = await _imageStorageProvider.GetJpgImageFilesAsync();
 
@@ -43,7 +49,7 @@ namespace S3ImageProcessing
 
                 foreach (var s3Image in s3Images)
                 {
-                    var imageData = _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName).GetAwaiter().GetResult();
+                    var imageData = await _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName);
 
                     var bitmap = Image.Load<Rgb24>(imageData);
 
@@ -70,7 +76,7 @@ namespace S3ImageProcessing
                     _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
                 }
             }
-           catch (Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
