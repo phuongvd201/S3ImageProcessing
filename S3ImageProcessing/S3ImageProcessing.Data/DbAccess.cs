@@ -19,7 +19,7 @@ namespace S3ImageProcessing.Data
             _dbFactory = DbProviderFactories.GetFactory(_databaseOption.ProviderName);
         }
 
-        public int Insert(string sql, params object[] parms)
+        public int ExecuteScalar(string sql, params object[] parms)
         {
             using (var connection = CreateAndOpenConnection())
             {
@@ -30,7 +30,7 @@ namespace S3ImageProcessing.Data
             }
         }
 
-        public int Update(string sql, params object[] parms)
+        public int ExecuteNonQuery(string sql, params object[] parms)
         {
             using (var connection = CreateAndOpenConnection())
             {
@@ -39,11 +39,6 @@ namespace S3ImageProcessing.Data
                     return command.ExecuteNonQuery();
                 }
             }
-        }
-
-        public int Delete(string sql, params object[] parms)
-        {
-            return Update(sql, parms);
         }
 
         public DbConnection CreateAndOpenConnection()

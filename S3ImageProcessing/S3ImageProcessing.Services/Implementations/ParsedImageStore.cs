@@ -19,7 +19,7 @@ namespace S3ImageProcessing.Services.Implementations
         {
             string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize)";
 
-            file.FileId = _dbAccess.Insert(
+            file.FileId = _dbAccess.ExecuteScalar(
                 sql,
                 new object[]
                 {
@@ -85,14 +85,14 @@ namespace S3ImageProcessing.Services.Implementations
             // Truncate to reseed PK identity to 1
             var sql = @"TRUNCATE TABLE ImageFile";
 
-            _dbAccess.Delete(sql);
+            _dbAccess.ExecuteNonQuery(sql);
         }
 
         private void DeleteHistograms()
         {
             var sql = @"DELETE From Histogram";
 
-            _dbAccess.Delete(sql);
+            _dbAccess.ExecuteNonQuery(sql);
         }
     }
 }
