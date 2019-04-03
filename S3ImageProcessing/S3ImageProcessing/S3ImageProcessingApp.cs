@@ -12,20 +12,27 @@ namespace S3ImageProcessing
         private readonly ILogger<S3ImageProcessingApp> _logger;
 
         private readonly IImageStorageProvider _imageStorageProvider;
+        private readonly IParsedImageStore _parsedImageStore;
 
         public S3ImageProcessingApp(
             ILogger<S3ImageProcessingApp> logger,
-            IImageStorageProvider imageStorageProvider)
+            IImageStorageProvider imageStorageProvider,
+            IParsedImageStore parsedImageStore)
         {
             _logger = logger;
             _imageStorageProvider = imageStorageProvider;
+            _parsedImageStore = parsedImageStore;
         }
 
         public async Task Start()
         {
             try
             {
-                var s3Images = await _imageStorageProvider.GetImageFilesAsync();
+                _parsedImageStore.DeleteExistingData();
+
+                var s3Images = await _imageStorageProvider.GetJpgImageFilesAsync();
+
+                _parsedImageStore.SaveImageFiles(s3Images);
             }
             catch (Exception ex)
             {

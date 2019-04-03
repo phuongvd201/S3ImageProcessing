@@ -6,6 +6,6 @@ namespace S3ImageProcessing.Services.Interfaces
 {
     public interface IImageStorageProvider
     {
-        Task<ImageFile[]> GetImageFilesAsync();
+        Task<ImageFile[]> GetJpgImageFilesAsync();
     }
 }

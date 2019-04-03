@@ -38,24 +38,33 @@ namespace S3ImageProcessing.S3Bucket
 
             var request = new ListObjectsV2Request
             {
-                BucketName = Option.BucketPath,
+                BucketName = Option.BucketName,
                 MaxKeys = int.MaxValue,
+                Delimiter = "/" // listing on root
             };
 
             ListObjectsV2Response response;
 
             do
             {
-                response = await Client.ListObjectsV2Async(request);
-
-                if (response != null)
+                try
                 {
-                    result.AddRange(response.S3Objects);
-                }
+                    response = Client.ListObjectsV2Async(request).Result;
 
-                request.ContinuationToken = response.NextContinuationToken;
+                    if (response != null)
+                    {
+                        result.AddRange(response.S3Objects);
+                    }
+
+                    request.ContinuationToken = response.NextContinuationToken;
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                    throw;
+                }
             }
-            while (response.IsTruncated && !string.IsNullOrEmpty(response.NextContinuationToken));
+            while (!string.IsNullOrEmpty(response.NextContinuationToken));
 
             return result;
         }

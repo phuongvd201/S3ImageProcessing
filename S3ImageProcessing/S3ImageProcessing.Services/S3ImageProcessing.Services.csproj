@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\S3ImageProcessing.Data\S3ImageProcessing.Data.csproj" />
     <ProjectReference Include="..\S3ImageProcessing.S3Bucket\S3ImageProcessing.S3Bucket.csproj" />
   </ItemGroup>
 

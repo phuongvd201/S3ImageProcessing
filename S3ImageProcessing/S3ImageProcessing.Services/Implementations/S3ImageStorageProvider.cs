@@ -10,6 +10,8 @@ namespace S3ImageProcessing.Services.Implementations
 {
     public class S3ImageStorageProvider : IImageStorageProvider
     {
+        private const string JpgExtension = ".jpg";
+
         private readonly S3CBucketClient _s3Client;
 
         public S3ImageStorageProvider(S3CBucketClient s3Client)
@@ -17,12 +19,12 @@ namespace S3ImageProcessing.Services.Implementations
             _s3Client = s3Client;
         }
 
-        public async Task<ImageFile[]> GetImageFilesAsync()
+        public async Task<ImageFile[]> GetJpgImageFilesAsync()
         {
             var s3Objects = await _s3Client.ListAllObjectsAsync();
 
             return s3Objects
-                .Where(x => x.Key.ToUpper().EndsWith(".jpg", StringComparison.Ordinal))
+                .Where(x => !string.IsNullOrWhiteSpace(x.Key) && x.Key.ToLower().EndsWith(JpgExtension, StringComparison.Ordinal))
                 .Select(
                     x => new ImageFile
                     {

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using S3ImageProcessing.Data;
 using S3ImageProcessing.S3Bucket;
 using S3ImageProcessing.Services.Implementations;
 using S3ImageProcessing.Services.Interfaces;
@@ -25,8 +26,11 @@ namespace S3ImageProcessing
                 .AddOptions()
                 .AddLogging(opt => opt.AddConsole())
                 .Configure<S3ClientOption>(configuration.GetSection(nameof(S3ClientOption)))
+                .Configure<DatabaseOption>(configuration.GetSection(nameof(DatabaseOption)))
                 .AddSingleton<S3CBucketClient>()
-                .AddScoped<IImageStorageProvider, S3ImageStorageProvider>()
+                .AddSingleton<Db>()
+                .AddSingleton<IImageStorageProvider, S3ImageStorageProvider>()
+                .AddSingleton<IParsedImageStore, DbParsedImageStore>()
 
                 //.AddScoped<IExchangeService, ExchangeService>()
                 //.AddScoped<IRegressionEquationService, RegressionEquationService>()
