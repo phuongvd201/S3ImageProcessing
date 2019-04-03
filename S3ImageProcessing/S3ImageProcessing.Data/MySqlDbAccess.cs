@@ -6,19 +6,20 @@ using MySql.Data.MySqlClient;
 
 namespace S3ImageProcessing.Data
 {
-    public class Db
+    public class MySqlDbAccess : IDbAccess
     {
-        private static readonly DbProviderFactory DbFactory = MySqlClientFactory.Instance;
+        private readonly DbProviderFactory _dbFactory = MySqlClientFactory.Instance;
 
         private string ConnectionString => CreateConnectionString();
 
         public DatabaseOption DatabaseOption { get; set; }
 
-        public Db()
+        public MySqlDbAccess()
         {
+            _dbFactory = MySqlClientFactory.Instance;
         }
 
-        public Db(IOptions<DatabaseOption> option)
+        public MySqlDbAccess(IOptions<DatabaseOption> option)
         {
             DatabaseOption = option.Value;
         }
@@ -52,7 +53,7 @@ namespace S3ImageProcessing.Data
 
         public DbConnection CreateConnection()
         {
-            var connection = DbFactory.CreateConnection();
+            var connection = _dbFactory.CreateConnection();
 
             connection.ConnectionString = ConnectionString;
             connection.Open();
@@ -62,7 +63,7 @@ namespace S3ImageProcessing.Data
 
         public DbCommand CreateCommand(string sql, DbConnection conn, params object[] parms)
         {
-            var command = DbFactory.CreateCommand();
+            var command = _dbFactory.CreateCommand();
 
             command.Connection = conn;
             command.CommandText = sql;
@@ -74,7 +75,7 @@ namespace S3ImageProcessing.Data
 
         private string CreateConnectionString()
         {
-            var builder = DbFactory.CreateConnectionStringBuilder();
+            var builder = _dbFactory.CreateConnectionStringBuilder();
 
             builder.Add("Server", DatabaseOption.ServerName);
             builder.Add("Database", DatabaseOption.DatabaseName);

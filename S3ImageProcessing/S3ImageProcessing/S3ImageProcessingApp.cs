@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -9,8 +10,10 @@ namespace S3ImageProcessing
 {
     public class S3ImageProcessingApp
     {
-        private readonly ILogger<S3ImageProcessingApp> _logger;
+        private int processedCount = 0;
+        private static readonly object LockObject = new object();
 
+        private readonly ILogger _logger;
         private readonly IImageStorageProvider _imageStorageProvider;
         private readonly IParsedImageStore _parsedImageStore;
         private readonly IImageHistogramService _imageHistogramService;
@@ -29,47 +32,52 @@ namespace S3ImageProcessing
 
         public async Task Start()
         {
-            try
-            {
-                _logger.LogInformation("Started app...");
+            var sw = Stopwatch.StartNew();
 
-                _logger.LogInformation("Start delete existing data.");
-                _parsedImageStore.DeleteExistingData();
-                _logger.LogInformation("Finish delete existing data.");
+            _logger.LogInformation("Started app...");
 
-                _logger.LogInformation("Start scan S3 images.");
-                var s3Images = await _imageStorageProvider.GetJpgImageFilesAsync();
-                _logger.LogInformation("Finish scan S3 images.");
+            _logger.LogInformation("Start delete existing data.");
+            _parsedImageStore.DeleteExistingData();
+            _logger.LogInformation("Finish delete existing data.");
 
-                _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
+            _logger.LogInformation("Start scan S3 images.");
+            var s3Images = await _imageStorageProvider.GetJpgImageFilesAsync();
+            _logger.LogInformation("Finish scan S3 images.");
 
-                foreach (var s3Image in s3Images)
+            _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
+
+            Parallel.ForEach(
+                s3Images,
+                s3Image =>
                 {
-                    _logger.LogInformation($"Start insert {s3Image.FileName} to table ImageFile.");
-                    _parsedImageStore.SaveImageFile(s3Image);
-                    _logger.LogInformation($"Start insert {s3Image.FileName} to table ImageFile.");
+                    try
+                    {
+                        _logger.LogInformation($"Start process {s3Image.FileName}...");
 
-                    _logger.LogInformation($"Start download {s3Image.FileName}.");
-                    var imageData = await _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName);
-                    _logger.LogInformation($"Finish download {s3Image.FileName}.");
+                        _parsedImageStore.SaveImageFile(s3Image);
 
-                    _logger.LogInformation($"Start histogram {s3Image.FileName}.");
-                    var histograms = _imageHistogramService.HistogramImage(imageData);
-                    _logger.LogInformation($"Finish histogram {s3Image.FileName}.");
+                        var imageData = _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName).GetAwaiter().GetResult();
 
-                    _logger.LogInformation($"Start save histogram {s3Image.FileName} to database.");
-                    _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
-                    _logger.LogInformation($"Finish save histogram {s3Image.FileName} to database.");
-                }
+                        var histograms = _imageHistogramService.HistogramImage(imageData);
 
-                _logger.LogInformation($"Finish process s3 images.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
+                        _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
 
-                Console.ReadKey();
-            }
+                        _logger.LogInformation($"Finish process {s3Image.FileName}.");
+
+                        lock (LockObject)
+                        {
+                            processedCount++;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"ERROR on {s3Image.FileName}: " + ex.Message);
+                    }
+                });
+
+            _logger.LogInformation($"Finish processed {processedCount} / {s3Images.Length} images in {sw.Elapsed}.");
+
+            Console.ReadKey();
         }
     }
 }

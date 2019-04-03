@@ -28,7 +28,7 @@ namespace S3ImageProcessing
                 .Configure<S3ClientOption>(configuration.GetSection(nameof(S3ClientOption)))
                 .Configure<DatabaseOption>(configuration.GetSection(nameof(DatabaseOption)))
                 .AddSingleton<S3CBucketClient>()
-                .AddSingleton<Db>()
+                .AddSingleton<MySqlDbAccess>()
                 .AddSingleton<IImageStorageProvider, S3ImageStorageProvider>()
                 .AddSingleton<IParsedImageStore, DbParsedImageStore>()
                 .AddSingleton<IImageHistogramService, ImageHistogramService>()
