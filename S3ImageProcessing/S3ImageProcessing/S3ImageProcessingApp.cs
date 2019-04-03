@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 
-using S3ImageProcessing.Services.Entities;
-using S3ImageProcessing.Services.Helpers;
 using S3ImageProcessing.Services.Interfaces;
-
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace S3ImageProcessing
 {
@@ -20,15 +13,18 @@ namespace S3ImageProcessing
 
         private readonly IImageStorageProvider _imageStorageProvider;
         private readonly IParsedImageStore _parsedImageStore;
+        private readonly IImageHistogramService _imageHistogramService;
 
         public S3ImageProcessingApp(
             ILogger<S3ImageProcessingApp> logger,
             IImageStorageProvider imageStorageProvider,
-            IParsedImageStore parsedImageStore)
+            IParsedImageStore parsedImageStore,
+            IImageHistogramService imageHistogramService)
         {
             _logger = logger;
             _imageStorageProvider = imageStorageProvider;
             _parsedImageStore = parsedImageStore;
+            _imageHistogramService = imageHistogramService;
         }
 
         public async Task Start()
@@ -38,47 +34,41 @@ namespace S3ImageProcessing
                 _logger.LogInformation("Started app...");
 
                 _logger.LogInformation("Start delete existing data.");
-
                 _parsedImageStore.DeleteExistingData();
-
                 _logger.LogInformation("Finish delete existing data.");
 
+                _logger.LogInformation("Start scan S3 images.");
                 var s3Images = await _imageStorageProvider.GetJpgImageFilesAsync();
+                _logger.LogInformation("Finish scan S3 images.");
 
-                _parsedImageStore.SaveImageFiles(s3Images);
+                _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
 
                 foreach (var s3Image in s3Images)
                 {
+                    _logger.LogInformation($"Start insert {s3Image.FileName} to table ImageFile.");
+                    _parsedImageStore.SaveImageFile(s3Image);
+                    _logger.LogInformation($"Start insert {s3Image.FileName} to table ImageFile.");
+
+                    _logger.LogInformation($"Start download {s3Image.FileName}.");
                     var imageData = await _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName);
+                    _logger.LogInformation($"Finish download {s3Image.FileName}.");
 
-                    var bitmap = Image.Load<Rgb24>(imageData);
+                    _logger.LogInformation($"Start histogram {s3Image.FileName}.");
+                    var histograms = _imageHistogramService.HistogramImage(imageData);
+                    _logger.LogInformation($"Finish histogram {s3Image.FileName}.");
 
-                    var histograms = new int[256];
-
-                    //MemoryMarshal.AsBytes(bitmap.GetPixelSpan()).ToArray();
-
-                    var pixelArray = bitmap.GetPixelSpan()
-                        .ToArray()
-                        .Select(
-                            x => new Pixel
-                            {
-                                R = x.R,
-                                G = x.G,
-                                B = x.B,
-                            }.To8Bit())
-                        .ToArray();
-
-                    for (int i = 0; i < pixelArray.Count(); i++)
-                    {
-                        histograms[pixelArray[i]]++;
-                    }
-
+                    _logger.LogInformation($"Start save histogram {s3Image.FileName} to database.");
                     _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
+                    _logger.LogInformation($"Finish save histogram {s3Image.FileName} to database.");
                 }
+
+                _logger.LogInformation($"Finish process s3 images.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
+
+                Console.ReadKey();
             }
         }
     }

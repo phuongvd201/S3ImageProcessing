@@ -2,6 +2,6 @@
 {
     public interface IImageHistogramService
     {
-        byte[] HistogramImage();
+        int[] HistogramImage(byte[] imageData);
     }
 }

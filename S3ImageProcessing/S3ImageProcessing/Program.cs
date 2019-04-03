@@ -31,6 +31,7 @@ namespace S3ImageProcessing
                 .AddSingleton<Db>()
                 .AddSingleton<IImageStorageProvider, S3ImageStorageProvider>()
                 .AddSingleton<IParsedImageStore, DbParsedImageStore>()
+                .AddSingleton<IImageHistogramService, ImageHistogramService>()
 
                 //.AddScoped<IExchangeService, ExchangeService>()
                 //.AddScoped<IRegressionEquationService, RegressionEquationService>()

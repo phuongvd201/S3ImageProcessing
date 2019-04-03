@@ -1,6 +1,4 @@
-﻿using System;
-
-using S3ImageProcessing.Data;
+﻿using S3ImageProcessing.Data;
 using S3ImageProcessing.Services.Entities;
 using S3ImageProcessing.Services.Interfaces;
 
@@ -15,19 +13,41 @@ namespace S3ImageProcessing.Services.Implementations
             _db = db;
         }
 
-        private void SaveImageFile(ImageFile file)
+        public void SaveImageFiles(ImageFile[] files)
+        {
+            string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize);" + ";SELECT LAST_INSERT_ID();";
+
+            using (var connection = _db.CreateConnection())
+            {
+                using (var transaction = connection.BeginTransaction())
+                {
+                    foreach (var file in files)
+                    {
+                        using (var command = _db.CreateCommand(sql, connection))
+                        {
+                            command
+                                .WithSqlParameter("@FileName", file.FileName)
+                                .WithSqlParameter("@FileSize", file.FileSize)
+                                .ExecuteScalar();
+                        }
+                    }
+
+                    transaction.Commit();
+                }
+            }
+        }
+
+        public void SaveImageFile(ImageFile file)
         {
             string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize)";
 
-            file.FileId = _db.Insert(sql, Take(file));
-        }
-
-        public void SaveImageFiles(ImageFile[] files)
-        {
-            foreach (var imageFile in files)
-            {
-                SaveImageFile(imageFile);
-            }
+            file.FileId = _db.Insert(
+                sql,
+                new object[]
+                {
+                    "@FileName", file.FileName,
+                    "@FileSize", file.FileSize,
+                });
         }
 
         public void SaveImageHistograms(int fileId, int[] histograms)
@@ -38,7 +58,7 @@ namespace S3ImageProcessing.Services.Implementations
             {
                 using (var transaction = connection.BeginTransaction())
                 {
-                    for (int i = 0; i <= 255; i++)
+                    for (int i = 0; i <= histograms.Length - 1; i++)
                     {
                         using (var command = _db.CreateCommand(
                             sql,
@@ -76,11 +96,11 @@ namespace S3ImageProcessing.Services.Implementations
 
         public void DeleteExistingData()
         {
-            DeleteHistogram();
-            TruncateImageFile();
+            DeleteHistograms();
+            DeleteImageFiles();
         }
 
-        private void TruncateImageFile()
+        private void DeleteImageFiles()
         {
             // Truncate to reseed PK identity to 1
             var sql = @"TRUNCATE TABLE ImageFile";
@@ -88,21 +108,11 @@ namespace S3ImageProcessing.Services.Implementations
             _db.Delete(sql);
         }
 
-        private void DeleteHistogram()
+        private void DeleteHistograms()
         {
-            // Truncate to reseed PK identity to 1
             var sql = @"DELETE From Histogram";
 
             _db.Delete(sql);
-        }
-
-        private static object[] Take(ImageFile file)
-        {
-            return new object[]
-            {
-                "@FileName", file.FileName,
-                "@FileSize", file.FileSize,
-            };
         }
     }
 }

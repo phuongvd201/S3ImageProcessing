@@ -25,7 +25,7 @@ namespace S3ImageProcessing.Services.Implementations
             var s3Objects = await _s3Client.ListAllObjectsAsync();
 
             return s3Objects
-                .Where(x => !string.IsNullOrWhiteSpace(x.Key) && x.Key.ToLower().EndsWith(JpgExtension, StringComparison.Ordinal))
+                .Where(x => !string.IsNullOrWhiteSpace(x.Key) && x.Key.EndsWith(JpgExtension, StringComparison.InvariantCultureIgnoreCase))
                 .Select(
                     x => new ImageFile
                     {

@@ -47,22 +47,14 @@ namespace S3ImageProcessing.S3Bucket
 
             do
             {
-                try
-                {
-                    response = Client.ListObjectsV2Async(request).Result;
+                response = await Client.ListObjectsV2Async(request);
 
-                    if (response != null)
-                    {
-                        result.AddRange(response.S3Objects);
-                    }
-
-                    request.ContinuationToken = response.NextContinuationToken;
-                }
-                catch (Exception exception)
+                if (response != null)
                 {
-                    Console.WriteLine(exception);
-                    throw;
+                    result.AddRange(response.S3Objects);
                 }
+
+                request.ContinuationToken = response.NextContinuationToken;
             }
             while (!string.IsNullOrEmpty(response.NextContinuationToken));
 

@@ -1,14 +1,12 @@
 ﻿using System;
 
-using S3ImageProcessing.Services.Entities;
-
 namespace S3ImageProcessing.Services.Helpers
 {
     public static class PixelConvertHelper
     {
-        public static byte To8Bit(this Pixel value)
+        public static byte To8BitColorByte(byte red, byte green, byte blue)
         {
-            var value8Bit = (byte)(((byte)(value.R / 32) << 5) + ((byte)(value.G / 32) << 2) + (byte)(value.B / 64));
+            var value8Bit = (byte)(((byte)(red / 32) << 5) + ((byte)(green / 32) << 2) + (byte)(blue / 64));
 
             if (value8Bit > 255)
             {

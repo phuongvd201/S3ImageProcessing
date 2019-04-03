@@ -1,10 +1,27 @@
 ﻿using System;
+using System.Data;
 using System.Data.Common;
 
 namespace S3ImageProcessing.Data
 {
     public static class DbExtentions
     {
+        public static DbCommand WithSqlParameter(this DbCommand cmd, string paramName, object paramValue)
+        {
+            if (string.IsNullOrEmpty(cmd.CommandText) && cmd.CommandType != CommandType.StoredProcedure)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var param = cmd.CreateParameter();
+
+            param.ParameterName = paramName;
+            param.Value = paramValue ?? DBNull.Value;
+            cmd.Parameters.Add(param);
+
+            return cmd;
+        }
+
         public static void AddParameters(this DbCommand command, object[] parms)
         {
             if (parms != null && parms.Length > 0)

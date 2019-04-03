@@ -27,7 +27,7 @@ namespace S3ImageProcessing.Data
         {
             using (var connection = CreateConnection())
             {
-                using (var command = CreateCommand(sql + ";SELECT LAST_INSERT_ID();;", connection, parms))
+                using (var command = CreateCommand(sql + ";SELECT LAST_INSERT_ID();", connection, parms))
                 {
                     return int.Parse(command.ExecuteScalar().ToString());
                 }
