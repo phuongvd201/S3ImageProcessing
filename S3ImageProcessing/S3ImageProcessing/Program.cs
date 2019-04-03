@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Data.Common;
 using System.IO;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+using MySql.Data.MySqlClient;
 
 using S3ImageProcessing.Data;
 using S3ImageProcessing.S3Bucket;
@@ -33,6 +36,8 @@ namespace S3ImageProcessing
 
         private static void RegisterServices(IConfiguration configuration)
         {
+            DbProviderFactories.RegisterFactory("MySql.Data.MySqlClient", MySqlClientFactory.Instance);
+
             var serviceCollection = new ServiceCollection();
 
             serviceCollection
@@ -41,9 +46,9 @@ namespace S3ImageProcessing
                 .Configure<S3ClientOption>(configuration.GetSection(nameof(S3ClientOption)))
                 .Configure<DatabaseOption>(configuration.GetSection(nameof(DatabaseOption)))
                 .AddSingleton<S3CBucketClient>()
-                .AddSingleton<MySqlDbAccess>()
+                .AddSingleton<IDbAccess, DbAccess>()
                 .AddSingleton<IImageStorageProvider, S3ImageStorageProvider>()
-                .AddSingleton<IParsedImageStore, DbParsedImageStore>()
+                .AddSingleton<IParsedImageStore, ParsedImageStore>()
                 .AddSingleton<IImageHistogramService, ImageHistogramService>()
                 .AddSingleton<S3ImageProcessingApp>();
 

@@ -40,7 +40,7 @@ namespace S3ImageProcessing.S3Bucket
             {
                 BucketName = Option.BucketName,
                 MaxKeys = int.MaxValue,
-                Delimiter = "/" // listing on root
+                Delimiter = "/" // only listing in root
             };
 
             ListObjectsV2Response response;

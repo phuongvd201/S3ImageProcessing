@@ -2,31 +2,25 @@
 
 using Microsoft.Extensions.Options;
 
-using MySql.Data.MySqlClient;
-
 namespace S3ImageProcessing.Data
 {
-    public class MySqlDbAccess : IDbAccess
+    public class DbAccess : IDbAccess
     {
-        private readonly DbProviderFactory _dbFactory = MySqlClientFactory.Instance;
+        private readonly DbProviderFactory _dbFactory;
 
         private string ConnectionString => CreateConnectionString();
 
-        public DatabaseOption DatabaseOption { get; set; }
+        private DatabaseOption _databaseOption { get; }
 
-        public MySqlDbAccess()
+        public DbAccess(IOptions<DatabaseOption> option)
         {
-            _dbFactory = MySqlClientFactory.Instance;
-        }
-
-        public MySqlDbAccess(IOptions<DatabaseOption> option)
-        {
-            DatabaseOption = option.Value;
+            _databaseOption = option.Value;
+            _dbFactory = DbProviderFactories.GetFactory(_databaseOption.ProviderName);
         }
 
         public int Insert(string sql, params object[] parms)
         {
-            using (var connection = CreateConnection())
+            using (var connection = CreateAndOpenConnection())
             {
                 using (var command = CreateCommand(sql + ";SELECT LAST_INSERT_ID();", connection, parms))
                 {
@@ -37,7 +31,7 @@ namespace S3ImageProcessing.Data
 
         public int Update(string sql, params object[] parms)
         {
-            using (var connection = CreateConnection())
+            using (var connection = CreateAndOpenConnection())
             {
                 using (var command = CreateCommand(sql, connection, parms))
                 {
@@ -51,7 +45,7 @@ namespace S3ImageProcessing.Data
             return Update(sql, parms);
         }
 
-        public DbConnection CreateConnection()
+        public DbConnection CreateAndOpenConnection()
         {
             var connection = _dbFactory.CreateConnection();
 
@@ -75,12 +69,14 @@ namespace S3ImageProcessing.Data
 
         private string CreateConnectionString()
         {
+            DbProviderFactories.GetProviderInvariantNames();
+
             var builder = _dbFactory.CreateConnectionStringBuilder();
 
-            builder.Add("Server", DatabaseOption.ServerName);
-            builder.Add("Database", DatabaseOption.DatabaseName);
-            builder.Add("UserID", DatabaseOption.UserID);
-            builder.Add("Password", DatabaseOption.Password);
+            builder.Add("Server", _databaseOption.ServerName);
+            builder.Add("Database", _databaseOption.DatabaseName);
+            builder.Add("UserID", _databaseOption.UserID);
+            builder.Add("Password", _databaseOption.Password);
 
             return builder.ConnectionString;
         }

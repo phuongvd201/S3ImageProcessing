@@ -4,11 +4,11 @@ using S3ImageProcessing.Services.Interfaces;
 
 namespace S3ImageProcessing.Services.Implementations
 {
-    public class DbParsedImageStore : IParsedImageStore
+    public class ParsedImageStore : IParsedImageStore
     {
-        private readonly MySqlDbAccess _dbAccess;
+        private readonly IDbAccess _dbAccess;
 
-        public DbParsedImageStore(MySqlDbAccess dbAccess)
+        public ParsedImageStore(IDbAccess dbAccess)
         {
             _dbAccess = dbAccess;
         }
@@ -30,7 +30,7 @@ namespace S3ImageProcessing.Services.Implementations
         {
             string sql = @"INSERT INTO Histogram (FileID, BandNumber, Value) VALUES (@FileID, @BandNumber, @Value)";
 
-            using (var connection = _dbAccess.CreateConnection())
+            using (var connection = _dbAccess.CreateAndOpenConnection())
             {
                 using (var transaction = connection.BeginTransaction())
                 {

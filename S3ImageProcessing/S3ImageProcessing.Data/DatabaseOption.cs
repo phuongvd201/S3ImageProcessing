@@ -9,5 +9,7 @@
         public string Password { get; set; }
 
         public string DatabaseName { get; set; }
+
+        public string ProviderName { get; set; }
     }
 }
