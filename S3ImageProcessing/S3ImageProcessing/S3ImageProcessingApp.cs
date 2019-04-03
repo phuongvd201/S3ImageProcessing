@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ using S3ImageProcessing.Services.Helpers;
 using S3ImageProcessing.Services.Interfaces;
 
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace S3ImageProcessing
@@ -45,27 +47,30 @@ namespace S3ImageProcessing
 
                     var bitmap = Image.Load<Rgb24>(imageData);
 
-                    var histograms = new byte[256];
+                    var histograms = new int[256];
 
-                    for (int i = 0; i < bitmap.Height; i++)
-                    {
-                        for (int j = 0; j < bitmap.Width; j++)
-                        {
-                            var pixel = new Pixel
+                    //MemoryMarshal.AsBytes(bitmap.GetPixelSpan()).ToArray();
+
+                    var pixelArray = bitmap.GetPixelSpan()
+                        .ToArray()
+                        .Select(
+                            x => new Pixel
                             {
-                                R = bitmap[i, j].R,
-                                G = bitmap[i, j].G,
-                                B = bitmap[i, j].B,
-                            };
+                                R = x.R,
+                                G = x.G,
+                                B = x.B,
+                            }.To8Bit())
+                        .ToArray();
 
-                            histograms[pixel.To8Bit()]++;
-                        }
+                    for (int i = 0; i < pixelArray.Count(); i++)
+                    {
+                        histograms[pixelArray[i]]++;
                     }
 
                     _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
                 }
             }
-            catch (Exception ex)
+           catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }

@@ -30,17 +30,15 @@ namespace S3ImageProcessing.Services.Implementations
             }
         }
 
-        public void SaveImageHistograms(int fileId, byte[] histograms)
+        public void SaveImageHistograms(int fileId, int[] histograms)
         {
-            string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize)";
+            string sql = @"INSERT INTO Histogram (FileID, BandNumber, Value) VALUES (@FileID, @BandNumber, @Value)";
 
             using (var connection = _db.CreateConnection())
             {
-                connection.Open();
-
                 using (var transaction = connection.BeginTransaction())
                 {
-                    for (byte i = 0; i <= 255; i++)
+                    for (int i = 0; i <= 255; i++)
                     {
                         using (var command = _db.CreateCommand(
                             sql,
@@ -78,7 +76,7 @@ namespace S3ImageProcessing.Services.Implementations
 
         public void DeleteExistingData()
         {
-            //DeleteHistogram();
+            DeleteHistogram();
             TruncateImageFile();
         }
 
@@ -92,7 +90,10 @@ namespace S3ImageProcessing.Services.Implementations
 
         private void DeleteHistogram()
         {
-            throw new NotImplementedException();
+            // Truncate to reseed PK identity to 1
+            var sql = @"DELETE From Histogram";
+
+            _db.Delete(sql);
         }
 
         private static object[] Take(ImageFile file)

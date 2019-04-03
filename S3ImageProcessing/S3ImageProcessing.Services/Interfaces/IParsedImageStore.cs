@@ -8,6 +8,6 @@ namespace S3ImageProcessing.Services.Interfaces
 
         void SaveImageFiles(ImageFile[] files);
 
-        void SaveImageHistograms(int fileId, byte[] histograms);
+        void SaveImageHistograms(int fileId, int[] histograms);
     }
 }
