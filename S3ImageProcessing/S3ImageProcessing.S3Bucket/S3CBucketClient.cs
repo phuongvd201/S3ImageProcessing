@@ -14,22 +14,22 @@ namespace S3ImageProcessing.S3Bucket
     {
         private static readonly RegionEndpoint DefaultEndPoint = RegionEndpoint.APNortheast1;
 
-        public AmazonS3Config S3Config { get; }
+        private readonly AmazonS3Config _s3Config;
 
-        public AmazonS3Client Client { get; }
+        private readonly AmazonS3Client _s3client;
 
-        public S3ClientOption Option { get; }
+        private readonly S3ClientOption _s3Option;
 
         public S3CBucketClient(IOptions<S3ClientOption> option)
         {
-            Option = option.Value;
-            S3Config = new AmazonS3Config
+            _s3Option = option.Value;
+            _s3Config = new AmazonS3Config
             {
-                RegionEndpoint = !string.IsNullOrWhiteSpace(Option.Region)
-                    ? RegionEndpoint.GetBySystemName(Option.Region)
+                RegionEndpoint = !string.IsNullOrWhiteSpace(_s3Option.Region)
+                    ? RegionEndpoint.GetBySystemName(_s3Option.Region)
                     : DefaultEndPoint,
             };
-            Client = new AmazonS3Client(Option.AccessKeyId, Option.SecretAccessKey, S3Config);
+            _s3client = new AmazonS3Client(_s3Option.AccessKeyId, _s3Option.SecretAccessKey, _s3Config);
         }
 
         public async Task<List<S3Object>> ListAllObjectsAsync()
@@ -38,7 +38,7 @@ namespace S3ImageProcessing.S3Bucket
 
             var request = new ListObjectsV2Request
             {
-                BucketName = Option.BucketName,
+                BucketName = _s3Option.BucketName,
                 MaxKeys = int.MaxValue,
                 Delimiter = "/" // only listing in root
             };
@@ -47,7 +47,7 @@ namespace S3ImageProcessing.S3Bucket
 
             do
             {
-                response = await Client.ListObjectsV2Async(request);
+                response = await _s3client.ListObjectsV2Async(request);
 
                 if (response != null)
                 {
@@ -63,14 +63,14 @@ namespace S3ImageProcessing.S3Bucket
 
         public async Task<GetObjectResponse> GetObjectsAsync(string keyName)
         {
-            var res = await Client.GetObjectAsync(Option.BucketName, keyName);
+            var res = await _s3client.GetObjectAsync(_s3Option.BucketName, keyName);
 
             return res;
         }
 
         public void Dispose()
         {
-            Client?.Dispose();
+            _s3client?.Dispose();
         }
     }
 }
