@@ -38,17 +38,21 @@ namespace S3ImageProcessing.Data
         private DbConnection CreateConnection()
         {
             var connection = DbFactory.CreateConnection();
+
             connection.ConnectionString = ConnectionString;
             connection.Open();
+
             return connection;
         }
 
         private static DbCommand CreateCommand(string sql, DbConnection conn, params object[] parms)
         {
             var command = DbFactory.CreateCommand();
+
             command.Connection = conn;
             command.CommandText = sql;
             command.AddParameters(parms);
+
             return command;
         }
     }

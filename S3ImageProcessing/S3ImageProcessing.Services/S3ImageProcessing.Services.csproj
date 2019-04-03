@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\S3ImageProcessing.S3Bucket\S3ImageProcessing.S3Bucket.csproj" />
+  </ItemGroup>
+
 </Project>

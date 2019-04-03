@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3ImageProcessing.Services"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3ImageProcessing.Data", "S3ImageProcessing.Data\S3ImageProcessing.Data.csproj", "{F281ECF8-992F-42FB-84F4-D1210F16C454}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3ImageProcessing.S3Bucket", "S3ImageProcessing.S3Bucket\S3ImageProcessing.S3Bucket.csproj", "{1E840560-A274-41FB-8015-A30AB6DE0337}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{F281ECF8-992F-42FB-84F4-D1210F16C454}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F281ECF8-992F-42FB-84F4-D1210F16C454}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F281ECF8-992F-42FB-84F4-D1210F16C454}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E840560-A274-41FB-8015-A30AB6DE0337}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E840560-A274-41FB-8015-A30AB6DE0337}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E840560-A274-41FB-8015-A30AB6DE0337}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E840560-A274-41FB-8015-A30AB6DE0337}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -36,6 +42,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{516BBC1C-5D36-43D0-A951-B2D3EA1B4960} = {E993FAF8-C810-40F2-9DCB-2581652AEF3F}
 		{F281ECF8-992F-42FB-84F4-D1210F16C454} = {E993FAF8-C810-40F2-9DCB-2581652AEF3F}
+		{1E840560-A274-41FB-8015-A30AB6DE0337} = {E993FAF8-C810-40F2-9DCB-2581652AEF3F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EDB6F9F3-E0C7-4012-9A75-F83DB1C5EC87}
