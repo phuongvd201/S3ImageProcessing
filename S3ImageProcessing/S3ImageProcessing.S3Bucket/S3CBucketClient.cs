@@ -69,9 +69,10 @@ namespace S3ImageProcessing.S3Bucket
             return result;
         }
 
-        public async Task<GetObjectResponse> GetObjectsAsync(string bucketName, string keyName)
+        public async Task<GetObjectResponse> GetObjectsAsync(string keyName)
         {
-            var res = await Client.GetObjectAsync(bucketName, keyName);
+            var res = await Client.GetObjectAsync(Option.BucketName, keyName);
+
             return res;
         }
 

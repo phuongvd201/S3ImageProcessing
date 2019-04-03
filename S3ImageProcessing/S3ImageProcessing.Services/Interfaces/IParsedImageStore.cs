@@ -4,8 +4,10 @@ namespace S3ImageProcessing.Services.Interfaces
 {
     public interface IParsedImageStore
     {
+        void DeleteExistingData();
+
         void SaveImageFiles(ImageFile[] files);
 
-        void DeleteExistingData();
+        void SaveImageHistograms(int fileId, byte[] histograms);
     }
 }

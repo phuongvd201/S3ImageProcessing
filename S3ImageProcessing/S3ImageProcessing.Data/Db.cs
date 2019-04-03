@@ -50,7 +50,7 @@ namespace S3ImageProcessing.Data
             return Update(sql, parms);
         }
 
-        private DbConnection CreateConnection()
+        public DbConnection CreateConnection()
         {
             var connection = DbFactory.CreateConnection();
 
@@ -60,7 +60,7 @@ namespace S3ImageProcessing.Data
             return connection;
         }
 
-        private static DbCommand CreateCommand(string sql, DbConnection conn, params object[] parms)
+        public DbCommand CreateCommand(string sql, DbConnection conn, params object[] parms)
         {
             var command = DbFactory.CreateCommand();
 

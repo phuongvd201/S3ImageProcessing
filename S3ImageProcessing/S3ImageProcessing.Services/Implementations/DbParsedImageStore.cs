@@ -19,7 +19,7 @@ namespace S3ImageProcessing.Services.Implementations
         {
             string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize)";
 
-            _db.Insert(sql, Take(file));
+            file.FileId = _db.Insert(sql, Take(file));
         }
 
         public void SaveImageFiles(ImageFile[] files)
@@ -28,6 +28,52 @@ namespace S3ImageProcessing.Services.Implementations
             {
                 SaveImageFile(imageFile);
             }
+        }
+
+        public void SaveImageHistograms(int fileId, byte[] histograms)
+        {
+            string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize)";
+
+            using (var connection = _db.CreateConnection())
+            {
+                connection.Open();
+
+                using (var transaction = connection.BeginTransaction())
+                {
+                    for (byte i = 0; i <= 255; i++)
+                    {
+                        using (var command = _db.CreateCommand(
+                            sql,
+                            connection,
+                            new object[]
+                            {
+                                "@FileID", fileId,
+                                "@BandNumber", i,
+                                "@Value", histograms[i],
+                            })
+                        )
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    transaction.Commit();
+                }
+            }
+        }
+
+        private void SaveImageHistogram(int fileId, byte bandNumber, int value)
+        {
+            string sql = @"INSERT INTO Histogram (FileID, BandNumber, Value) VALUES (@FileID, @BandNumber, @Value)";
+
+            _db.Insert(
+                sql,
+                new object[]
+                {
+                    "@FileID", fileId,
+                    "@BandNumber", bandNumber,
+                    "@Value", value,
+                });
         }
 
         public void DeleteExistingData()

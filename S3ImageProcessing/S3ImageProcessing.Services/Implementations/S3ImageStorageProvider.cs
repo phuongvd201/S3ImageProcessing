@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using S3ImageProcessing.S3Bucket;
 using S3ImageProcessing.Services.Entities;
+using S3ImageProcessing.Services.Helpers;
 using S3ImageProcessing.Services.Interfaces;
 
 namespace S3ImageProcessing.Services.Implementations
@@ -32,6 +33,13 @@ namespace S3ImageProcessing.Services.Implementations
                         FileSize = x.Size,
                     })
                 .ToArray();
+        }
+
+        public async Task<byte[]> GetImageFileDataAsync(string fileName)
+        {
+            var s3Object = await _s3Client.GetObjectsAsync(fileName);
+
+            return s3Object.ResponseStream.AsByte();
         }
     }
 }
