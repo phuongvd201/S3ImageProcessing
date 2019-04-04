@@ -40,16 +40,14 @@ namespace S3ImageProcessing.Services.Implementations
                     {
                         for (int i = 0; i < histograms.Length; i++)
                         {
-                            using (var command = _dbAccess.CreateCommand(
-                                sql,
-                                connection,
-                                new object[]
-                                {
-                                    "@FileID", fileId,
-                                    "@BandNumber", i,
-                                    "@Value", histograms[i],
-                                })
-                            )
+                            var parms = new object[]
+                            {
+                                "@FileID", fileId,
+                                "@BandNumber", i,
+                                "@Value", histograms[i],
+                            };
+
+                            using (var command = _dbAccess.CreateCommand(sql, connection, parms))
                             {
                                 command.ExecuteNonQuery();
                             }
@@ -59,15 +57,7 @@ namespace S3ImageProcessing.Services.Implementations
                     }
                     catch (Exception)
                     {
-                        try
-                        {
-                            transaction.Rollback();
-                        }
-                        catch
-                        {
-                            throw;
-                        }
-
+                        transaction.Rollback();
                         throw;
                     }
                 }
