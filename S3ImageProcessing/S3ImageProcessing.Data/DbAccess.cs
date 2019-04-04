@@ -8,14 +8,11 @@ namespace S3ImageProcessing.Data
     {
         private readonly DbProviderFactory _dbFactory;
 
-        private readonly string _connectionString;
-
         private readonly DatabaseOption _databaseOption;
 
         public DbAccess(IOptions<DatabaseOption> option)
         {
             _databaseOption = option.Value;
-            _connectionString = _databaseOption.ConnectionString;
             _dbFactory = DbProviderFactories.GetFactory(_databaseOption.ProviderName);
         }
 
@@ -45,7 +42,7 @@ namespace S3ImageProcessing.Data
         {
             var connection = _dbFactory.CreateConnection();
 
-            connection.ConnectionString = _connectionString;
+            connection.ConnectionString = _databaseOption.ConnectionString;
             connection.Open();
 
             return connection;
