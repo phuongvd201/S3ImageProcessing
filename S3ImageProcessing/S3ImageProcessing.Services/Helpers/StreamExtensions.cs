@@ -2,7 +2,7 @@
 
 namespace S3ImageProcessing.Services.Helpers
 {
-    public static class StreamHelper
+    public static class StreamExtensions
     {
         public static byte[] AsByte(this Stream stream)
         {
