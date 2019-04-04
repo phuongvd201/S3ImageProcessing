@@ -1,10 +1,13 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 
 using Microsoft.Extensions.Options;
 
 namespace S3ImageProcessing.Data
 {
-    public class DbAccess : IDbAccess
+    public class DbAccess
     {
         private readonly DbProviderFactory _dbFactory;
 
@@ -34,6 +37,23 @@ namespace S3ImageProcessing.Data
                 using (var command = CreateCommand(sql, connection, parms))
                 {
                     return command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public IEnumerable<T> Read<T>(string sql, Func<IDataReader, T> make, params object[] parms)
+        {
+            using (var connection = CreateAndOpenConnection())
+            {
+                using (var command = CreateCommand(sql, connection, parms))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            yield return make(reader);
+                        }
+                    }
                 }
             }
         }

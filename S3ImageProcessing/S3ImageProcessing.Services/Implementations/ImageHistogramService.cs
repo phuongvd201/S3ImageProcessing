@@ -9,7 +9,7 @@ namespace S3ImageProcessing.Services.Implementations
 {
     public class ImageHistogramService : IImageHistogramService
     {
-        public int[] HistogramImage(byte[] imageData)
+        public int[] ComputeHistogramImage(byte[] imageData)
         {
             using (var bitmap = Image.Load<Rgb24>(imageData))
             {

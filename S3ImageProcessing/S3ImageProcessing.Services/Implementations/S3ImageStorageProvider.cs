@@ -22,7 +22,7 @@ namespace S3ImageProcessing.Services.Implementations
 
         public async Task<ImageFile[]> GetJpgImageFilesAsync()
         {
-            var s3Objects = await _s3Client.ListAllObjectsAsync();
+            var s3Objects = await _s3Client.ListObjectsAsync();
 
             return s3Objects
                 .Where(x => !string.IsNullOrWhiteSpace(x.Key) && x.Key.EndsWith(JpgExtension, StringComparison.InvariantCultureIgnoreCase))

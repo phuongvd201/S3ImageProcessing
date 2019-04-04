@@ -58,7 +58,7 @@ namespace S3ImageProcessing
 
                         var imageData = _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName).GetAwaiter().GetResult();
 
-                        var histograms = _imageHistogramService.HistogramImage(imageData);
+                        var histograms = _imageHistogramService.ComputeHistogramImage(imageData);
 
                         _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
 

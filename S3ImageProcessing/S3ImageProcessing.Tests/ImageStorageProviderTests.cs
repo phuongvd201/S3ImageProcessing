@@ -8,7 +8,7 @@ using S3ImageProcessing.Services.Interfaces;
 
 using Xunit;
 
-namespace S3ImageProcessing.UnitTests
+namespace S3ImageProcessing.Tests
 {
     public class ImageStorageProviderTests
     {
@@ -45,7 +45,7 @@ namespace S3ImageProcessing.UnitTests
         public void Get_Image_Data_S3(string filename, int fileSize)
         {
             var images = _imageStorageProvider.GetImageFileDataAsync(filename).GetAwaiter().GetResult();
-            
+
             Assert.Equal(fileSize, images.Length);
         }
     }

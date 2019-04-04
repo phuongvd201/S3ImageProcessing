@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Linq;
 
 using S3ImageProcessing.Data;
 using S3ImageProcessing.Services.Entities;
@@ -8,9 +10,9 @@ namespace S3ImageProcessing.Services.Implementations
 {
     public class ParsedImageStore : IParsedImageStore
     {
-        private readonly IDbAccess _dbAccess;
+        private readonly DbAccess _dbAccess;
 
-        public ParsedImageStore(IDbAccess dbAccess)
+        public ParsedImageStore(DbAccess dbAccess)
         {
             _dbAccess = dbAccess;
         }
@@ -64,6 +66,13 @@ namespace S3ImageProcessing.Services.Implementations
             }
         }
 
+        public ImageFile[] GetImageFiles()
+        {
+            string sql = @"SELECT FileID, FileName, FileSize FROM ImageFile";
+
+            return _dbAccess.Read(sql, Make).ToArray();
+        }
+
         public void DeleteExistingData()
         {
             DeleteHistograms();
@@ -84,5 +93,13 @@ namespace S3ImageProcessing.Services.Implementations
 
             _dbAccess.ExecuteNonQuery(sql);
         }
+
+        private static readonly Func<IDataReader, ImageFile> Make = reader =>
+            new ImageFile
+            {
+                FileId = reader["FileID"].AsInt(),
+                FileName = reader["FileName"].AsString(),
+                FileSize = reader["FileSize"].AsInt()
+            };
     }
 }

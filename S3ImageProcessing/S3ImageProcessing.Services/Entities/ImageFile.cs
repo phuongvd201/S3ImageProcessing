@@ -4,8 +4,8 @@
     {
         public int FileId { get; set; }
 
-        public string FileName { get; internal set; }
+        public string FileName { get; set; }
 
-        public long FileSize { get; internal set; }
+        public long FileSize { get; set; }
     }
 }

@@ -27,6 +27,7 @@ namespace S3ImageProcessing
 
             _configuration = configurationBuilder.Build();
 
+            RegisterDbProvider();
             RegisterServices(_configuration);
 
             _serviceProvider.GetService<S3ImageProcessingApp>().Start().GetAwaiter().GetResult();
@@ -34,10 +35,13 @@ namespace S3ImageProcessing
             DisposeServices();
         }
 
-        private static void RegisterServices(IConfiguration configuration)
+        private static void RegisterDbProvider()
         {
             DbProviderFactories.RegisterFactory("MySql.Data.MySqlClient", MySqlClientFactory.Instance);
+        }
 
+        private static void RegisterServices(IConfiguration configuration)
+        {
             var serviceCollection = new ServiceCollection();
 
             serviceCollection
@@ -46,7 +50,7 @@ namespace S3ImageProcessing
                 .Configure<S3ClientOption>(configuration.GetSection(nameof(S3ClientOption)))
                 .Configure<DatabaseOption>(configuration.GetSection(nameof(DatabaseOption)))
                 .AddSingleton<S3CBucketClient>()
-                .AddSingleton<IDbAccess, DbAccess>()
+                .AddSingleton<DbAccess>()
                 .AddSingleton<IImageStorageProvider, S3ImageStorageProvider>()
                 .AddSingleton<IParsedImageStore, ParsedImageStore>()
                 .AddSingleton<IImageHistogramService, ImageHistogramService>()

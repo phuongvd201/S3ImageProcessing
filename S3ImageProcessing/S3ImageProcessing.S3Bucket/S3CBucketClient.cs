@@ -32,7 +32,7 @@ namespace S3ImageProcessing.S3Bucket
             _s3client = new AmazonS3Client(_s3Option.AccessKeyId, _s3Option.SecretAccessKey, _s3Config);
         }
 
-        public async Task<List<S3Object>> ListAllObjectsAsync()
+        public async Task<List<S3Object>> ListObjectsAsync()
         {
             var result = new List<S3Object>();
 

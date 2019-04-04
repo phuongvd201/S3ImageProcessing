@@ -26,5 +26,24 @@ namespace S3ImageProcessing.Data
                 }
             }
         }
+
+        public static int AsInt(this object item, int defaultInt = default(int))
+        {
+            if (item == null)
+                return defaultInt;
+
+            if (!int.TryParse(item.ToString(), out int result))
+                return defaultInt;
+
+            return result;
+        }
+
+        public static string AsString(this object item, string defaultString = default(string))
+        {
+            if (item == null || item.Equals(DBNull.Value))
+                return defaultString;
+
+            return item.ToString().Trim();
+        }
     }
 }
