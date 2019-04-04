@@ -30,7 +30,7 @@ namespace S3ImageProcessing
             RegisterDbProvider();
             RegisterServices(_configuration);
 
-            _serviceProvider.GetService<S3ImageProcessingApp>().Start().GetAwaiter().GetResult();
+            _serviceProvider.GetService<S3ImageProcessingApp>().Start();
 
             DisposeServices();
         }

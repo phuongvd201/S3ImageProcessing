@@ -30,7 +30,7 @@ namespace S3ImageProcessing
             _imageHistogramService = imageHistogramService;
         }
 
-        public async Task Start()
+        public void Start()
         {
             var sw = Stopwatch.StartNew();
 
@@ -41,7 +41,7 @@ namespace S3ImageProcessing
             _logger.LogInformation("Finishing delete existing data.");
 
             _logger.LogInformation("Starting scan S3 images...");
-            var s3Images = await _imageStorageProvider.GetJpgImageFilesAsync();
+            var s3Images = _imageStorageProvider.GetJpgImageFilesAsync().GetAwaiter().GetResult();
             _logger.LogInformation("Finishing scan S3 images.");
 
             _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
