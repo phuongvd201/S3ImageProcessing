@@ -81,8 +81,8 @@ namespace S3ImageProcessing.Services.Implementations
 
         private void DeleteImageFiles()
         {
-            // Truncate to reseed PK identity to 1
-            var sql = @"TRUNCATE TABLE ImageFile";
+            // delete all data and reseed PK auto increment to 1
+            var sql = @"DELETE FROM ImageFile; ALTER TABLE ImageFile AUTO_INCREMENT = 1;";
 
             _dbAccess.ExecuteNonQuery(sql);
         }
