@@ -28,25 +28,26 @@ namespace S3ImageProcessing.Tests
                         })));
         }
 
-        [Theory]
-        [InlineData("image_0001.jpg", 20354)]
-        [InlineData("image_0019.jpg", 8470)]
-        public void Get_Jpg_Images_S3(string filename, int fileSize)
+        [Fact]
+        public void Get_JpgImages_ReturnImageCount()
         {
             var images = _imageStorageProvider.GetJpgImageFilesAsync().GetAwaiter().GetResult();
 
-            Assert.Equal(35, images.Length);
-            Assert.Equal(fileSize, images.FirstOrDefault(x => x.FileName == filename).FileSize);
+            var actualImagesCount = images.Length;
+
+            Assert.Equal(35, actualImagesCount);
         }
 
         [Theory]
         [InlineData("image_0001.jpg", 20354)]
         [InlineData("image_0019.jpg", 8470)]
-        public void Get_Image_Data_S3(string filename, int fileSize)
+        public void Get_JpgImage_ReturnFileSize(string filename, int expected)
         {
-            var images = _imageStorageProvider.GetImageFileDataAsync(filename).GetAwaiter().GetResult();
+            var images = _imageStorageProvider.GetJpgImageFilesAsync().GetAwaiter().GetResult();
 
-            Assert.Equal(fileSize, images.Length);
+            var actualImageFileSize = images.FirstOrDefault(x => x.FileName == filename)?.FileSize;
+
+            Assert.Equal(expected, actualImageFileSize);
         }
     }
 }

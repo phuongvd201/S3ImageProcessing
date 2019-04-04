@@ -50,8 +50,11 @@ namespace S3ImageProcessing.Tests
 
             var images = _parsedImageStore.GetImageFiles();
 
-            Assert.Equal(filename, images.FirstOrDefault(x => x.FileId == imageFile.FileId).FileName);
-            Assert.Equal(fileSize, images.FirstOrDefault(x => x.FileId == imageFile.FileId).FileSize);
+            var actualFileName = images.FirstOrDefault(x => x.FileId == imageFile.FileId)?.FileName;
+            var actualFileSize = images.FirstOrDefault(x => x.FileId == imageFile.FileId)?.FileSize;
+
+            Assert.Equal(filename, actualFileName);
+            Assert.Equal(fileSize, actualFileSize);
         }
     }
 }
