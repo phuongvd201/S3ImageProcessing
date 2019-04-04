@@ -36,11 +36,11 @@ namespace S3ImageProcessing
 
             _logger.LogInformation("Started app...");
 
-            _logger.LogInformation("Starting delete existing data.");
+            _logger.LogInformation("Starting delete existing data...");
             _parsedImageStore.DeleteExistingData();
             _logger.LogInformation("Finishing delete existing data.");
 
-            _logger.LogInformation("Starting scan S3 images.");
+            _logger.LogInformation("Starting scan S3 images...");
             var s3Images = await _imageStorageProvider.GetJpgImageFilesAsync();
             _logger.LogInformation("Finishing scan S3 images.");
 
