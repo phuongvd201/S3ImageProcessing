@@ -51,6 +51,7 @@ namespace S3ImageProcessing.Services.Implementations
 
                             using (var command = _dbAccess.CreateCommand(sql, connection, parms))
                             {
+                                command.Transaction = transaction;
                                 command.ExecuteNonQuery();
                             }
                         }
@@ -82,7 +83,7 @@ namespace S3ImageProcessing.Services.Implementations
         private void DeleteImageFiles()
         {
             // delete all data and reseed PK auto increment to 1
-            var sql = @"DELETE FROM ImageFile; ALTER TABLE ImageFile AUTO_INCREMENT = 1;";
+            var sql = @"DELETE FROM ImageFile; DBCC CHECKIDENT (ImageFile, RESEED, 0);";
 
             _dbAccess.ExecuteNonQuery(sql);
         }

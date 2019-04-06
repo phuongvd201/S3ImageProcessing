@@ -34,47 +34,55 @@ namespace S3ImageProcessing
         {
             var sw = Stopwatch.StartNew();
 
-            _logger.LogInformation("Started app...");
+            try
+            {
+                _logger.LogInformation("Started app...");
 
-            _logger.LogInformation("Starting delete existing data...");
-            _parsedImageStore.DeleteExistingData();
-            _logger.LogInformation("Finishing delete existing data.");
+                _logger.LogInformation("Starting delete existing data...");
+                _parsedImageStore.DeleteExistingData();
+                _logger.LogInformation("Finishing delete existing data.");
 
-            _logger.LogInformation("Starting scan S3 images...");
-            var s3Images = _imageStorageProvider.GetJpgImageFilesAsync().GetAwaiter().GetResult();
-            _logger.LogInformation("Finishing scan S3 images.");
+                _logger.LogInformation("Starting scan S3 images...");
+                var s3Images = _imageStorageProvider.GetJpgImageFilesAsync().GetAwaiter().GetResult();
+                _logger.LogInformation("Finishing scan S3 images.");
 
-            _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
-
-            Parallel.ForEach(
-                s3Images,
-                s3Image =>
-                {
-                    try
+                Parallel.ForEach(
+                    s3Images,
+                    s3Image =>
                     {
-                        _logger.LogInformation($"Starting process {s3Image.FileName}...");
+                        try
+                        {
+                            _logger.LogInformation($"Starting process {s3Image.FileName}...");
 
-                        _parsedImageStore.SaveImageFile(s3Image);
+                            _parsedImageStore.SaveImageFile(s3Image);
 
-                        var imageData = _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName).GetAwaiter().GetResult();
+                            var imageData = _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName).GetAwaiter().GetResult();
 
-                        var histograms = _imageHistogramService.ComputeImageHistograms(imageData);
+                            var histograms = _imageHistogramService.ComputeImageHistograms(imageData);
 
-                        _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
+                            _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
 
-                        _logger.LogInformation($"Finishing process {s3Image.FileName}.");
+                            _logger.LogInformation($"Finishing process {s3Image.FileName}.");
 
-                        Interlocked.Increment(ref processedCount);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"ERROR on {s3Image.FileName}: " + ex.Message);
-                    }
-                });
+                            Interlocked.Increment(ref processedCount);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"ERROR on {s3Image.FileName}: " + ex.Message);
+                        }
+                    });
 
-            _logger.LogInformation($"Finish processed {processedCount} / {s3Images.Length} images in {sw.Elapsed}.");
+                _logger.LogInformation($"Finish processed {processedCount} / {s3Images.Length} images in {sw.Elapsed}.");
 
-            Console.ReadKey();
+                Console.ReadKey();
+
+                _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception.Message);
+                Console.ReadKey();
+            }
         }
     }
 }

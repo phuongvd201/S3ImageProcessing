@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.IO;
 
 using Microsoft.Extensions.Configuration;
@@ -38,6 +39,7 @@ namespace S3ImageProcessing
         private static void RegisterDbProvider()
         {
             DbProviderFactories.RegisterFactory("MySql.Data.MySqlClient", MySqlClientFactory.Instance);
+            DbProviderFactories.RegisterFactory("System.Data.SqlClient", SqlClientFactory.Instance);
         }
 
         private static void RegisterServices(IConfiguration configuration)
