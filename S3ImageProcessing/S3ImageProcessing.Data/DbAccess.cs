@@ -19,13 +19,13 @@ namespace S3ImageProcessing.Data
             _dbFactory = DbProviderFactories.GetFactory(_databaseOption.ProviderName);
         }
 
-        public int ExecuteScalar(string sql, params object[] parms)
+        public object ExecuteScalar(string sql, params object[] parms)
         {
             using (var connection = CreateAndOpenConnection())
             {
-                using (var command = CreateCommand(sql + ";SELECT @@IDENTITY;", connection, parms))
+                using (var command = CreateCommand(sql, connection, parms))
                 {
-                    return int.Parse(command.ExecuteScalar().ToString());
+                    return command.ExecuteScalar();
                 }
             }
         }
