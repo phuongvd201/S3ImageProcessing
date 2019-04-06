@@ -46,6 +46,8 @@ namespace S3ImageProcessing
                 var s3Images = _imageStorageProvider.GetJpgImageFilesAsync().GetAwaiter().GetResult();
                 _logger.LogInformation("Finishing scan S3 images.");
 
+                _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
+
                 Parallel.ForEach(
                     s3Images,
                     s3Image =>
@@ -73,16 +75,13 @@ namespace S3ImageProcessing
                     });
 
                 _logger.LogInformation($"Finish processed {processedCount} / {s3Images.Length} images in {sw.Elapsed}.");
-
-                Console.ReadKey();
-
-                _logger.LogInformation($"S3 bucket has {s3Images.Length} jpg images.");
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception.Message);
-                Console.ReadKey();
             }
+
+            Console.ReadKey();
         }
     }
 }
