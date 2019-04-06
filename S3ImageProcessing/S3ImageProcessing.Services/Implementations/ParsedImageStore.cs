@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Data;
-using System.Linq;
+using System.Data.Common;
 
 using S3ImageProcessing.Data;
 using S3ImageProcessing.Services.Entities;
@@ -17,45 +16,17 @@ namespace S3ImageProcessing.Services.Implementations
             _dbAccess = dbAccess;
         }
 
-        public void SaveImageFile(ImageFile file)
+        public void Save(ImageFile imageFile, int[] histograms)
         {
-            string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize); SELECT @@IDENTITY;";
-
-            file.FileId = _dbAccess.ExecuteScalar(
-                    sql,
-                    new object[]
-                    {
-                        "@FileName", file.FileName,
-                        "@FileSize", file.FileSize,
-                    })
-                .AsInt();
-        }
-
-        public void SaveImageHistograms(int fileId, int[] histograms)
-        {
-            string sql = @"INSERT INTO Histogram (FileID, BandNumber, Value) VALUES (@FileID, @BandNumber, @Value)";
-
             using (var connection = _dbAccess.CreateAndOpenConnection())
             {
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        for (int i = 0; i < histograms.Length; i++)
-                        {
-                            var parms = new object[]
-                            {
-                                "@FileID", fileId,
-                                "@BandNumber", i,
-                                "@Value", histograms[i],
-                            };
+                        InsertImageFile(imageFile, connection, transaction);
 
-                            using (var command = _dbAccess.CreateCommand(sql, connection, parms))
-                            {
-                                command.Transaction = transaction;
-                                command.ExecuteNonQuery();
-                            }
-                        }
+                        InsertHistograms(imageFile.FileId, histograms, connection, transaction);
 
                         transaction.Commit();
                     }
@@ -68,11 +39,64 @@ namespace S3ImageProcessing.Services.Implementations
             }
         }
 
-        public ImageFile[] GetImageFiles()
+        private void ExecuteTransaction(params Action<DbCommand>[] executeCommands)
         {
-            string sql = @"SELECT FileID, FileName, FileSize FROM ImageFile";
+            using (var connection = _dbAccess.CreateAndOpenConnection())
+            {
+                using (var transaction = connection.BeginTransaction())
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.Transaction = transaction;
 
-            return _dbAccess.Read(sql, Make).ToArray();
+                        foreach (var executeCommand in executeCommands)
+                        {
+                            executeCommand(command);
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+            }
+        }
+
+        private void InsertHistograms(int fileId, int[] histograms, DbConnection connection, DbTransaction transaction)
+        {
+            string sql = @"INSERT INTO Histogram (FileID, BandNumber, Value) VALUES (@FileID, @BandNumber, @Value);";
+
+            for (int i = 0; i < histograms.Length; i++)
+            {
+                var parms = new object[]
+                {
+                    "@FileID", fileId,
+                    "@BandNumber", i,
+                    "@Value", histograms[i],
+                };
+
+                using (var command = _dbAccess.CreateCommand(sql, connection, parms))
+                {
+                    command.Transaction = transaction;
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        private void InsertImageFile(ImageFile imageFile, DbConnection connection, DbTransaction transaction)
+        {
+            string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize); SELECT @@IDENTITY;";
+
+            using (var command = _dbAccess.CreateCommand(
+                sql,
+                connection,
+                new object[]
+                {
+                    "@FileName", imageFile.FileName,
+                    "@FileSize", imageFile.FileSize,
+                }))
+            {
+                command.Transaction = transaction;
+                imageFile.FileId = command.ExecuteScalar().AsInt();
+            }
         }
 
         public void DeleteExistingData()
@@ -95,13 +119,5 @@ namespace S3ImageProcessing.Services.Implementations
 
             _dbAccess.ExecuteNonQuery(sql);
         }
-
-        private static readonly Func<IDataReader, ImageFile> Make = reader =>
-            new ImageFile
-            {
-                FileId = reader["FileID"].AsInt(),
-                FileName = reader["FileName"].AsString(),
-                FileSize = reader["FileSize"].AsInt()
-            };
     }
 }

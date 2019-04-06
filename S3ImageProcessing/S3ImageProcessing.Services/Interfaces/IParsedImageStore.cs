@@ -6,10 +6,6 @@ namespace S3ImageProcessing.Services.Interfaces
     {
         void DeleteExistingData();
 
-        void SaveImageFile(ImageFile file);
-
-        void SaveImageHistograms(int fileId, int[] histograms);
-
-        ImageFile[] GetImageFiles();
+        void Save(ImageFile imageFile, int[] histograms);
     }
 }

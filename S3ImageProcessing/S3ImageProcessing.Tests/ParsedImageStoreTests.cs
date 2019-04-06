@@ -33,28 +33,28 @@ namespace S3ImageProcessing.Tests
             );
         }
 
-        [Theory]
-        [InlineData("image_0001.jpg", 20354)]
-        [InlineData("image_0019.jpg", 8470)]
-        public void Save_Image_File(string filename, int fileSize)
-        {
-            _parsedImageStore.DeleteExistingData();
+        //[Theory]
+        //[InlineData("image_0001.jpg", 20354)]
+        //[InlineData("image_0019.jpg", 8470)]
+        //public void Save_Image_File(string filename, int fileSize)
+        //{
+        //    _parsedImageStore.DeleteExistingData();
 
-            var imageFile = new ImageFile
-            {
-                FileName = filename,
-                FileSize = fileSize
-            };
+        //    var imageFile = new ImageFile
+        //    {
+        //        FileName = filename,
+        //        FileSize = fileSize
+        //    };
 
-            _parsedImageStore.SaveImageFile(imageFile);
+        //    //_parsedImageStore.SaveImageFile(imageFile);
 
-            var images = _parsedImageStore.GetImageFiles();
+        //    var images = _parsedImageStore.GetImageFiles();
 
-            var actualFileName = images.FirstOrDefault(x => x.FileId == imageFile.FileId)?.FileName;
-            var actualFileSize = images.FirstOrDefault(x => x.FileId == imageFile.FileId)?.FileSize;
+        //    var actualFileName = images.FirstOrDefault(x => x.FileId == imageFile.FileId)?.FileName;
+        //    var actualFileSize = images.FirstOrDefault(x => x.FileId == imageFile.FileId)?.FileSize;
 
-            Assert.Equal(filename, actualFileName);
-            Assert.Equal(fileSize, actualFileSize);
-        }
+        //    Assert.Equal(filename, actualFileName);
+        //    Assert.Equal(fileSize, actualFileSize);
+        //}
     }
 }

@@ -56,13 +56,15 @@ namespace S3ImageProcessing
                         {
                             _logger.LogInformation($"Starting process {s3Image.FileName}...");
 
-                            _parsedImageStore.SaveImageFile(s3Image);
+                            //_parsedImageStore.SaveImageFile(s3Image);
 
                             var imageData = _imageStorageProvider.GetImageFileDataAsync(s3Image.FileName).GetAwaiter().GetResult();
 
                             var histograms = _imageHistogramService.ComputeImageHistograms(imageData);
 
-                            _parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
+                            //_parsedImageStore.SaveImageHistograms(s3Image.FileId, histograms);
+
+                            _parsedImageStore.Save(s3Image, histograms);
 
                             _logger.LogInformation($"Finishing process {s3Image.FileName}.");
 
