@@ -21,14 +21,13 @@ namespace S3ImageProcessing.Services.Implementations
         {
             string sql = @"INSERT INTO ImageFile (FileName, FileSize) VALUES (@FileName, @FileSize); SELECT @@IDENTITY;";
 
-            file.FileId = _dbAccess.ExecuteScalar(
-                    sql,
-                    new object[]
-                    {
-                        "@FileName", file.FileName,
-                        "@FileSize", file.FileSize,
-                    })
-                .AsInt();
+            var parms = new object[]
+            {
+                "@FileName", file.FileName,
+                "@FileSize", file.FileSize,
+            };
+
+            file.FileId = _dbAccess.ExecuteScalar(sql, parms).AsInt();
         }
 
         public void SaveImageHistograms(int fileId, int[] histograms)
