@@ -7,5 +7,5 @@ jobs:
       - checkout
       - run: find .
       - run: dotnet restore S3ImageProcessing/S3ImageProcessing.sln
-      - run: dotnet build
+      - run: dotnet build S3ImageProcessing/S3ImageProcessing/S3ImageProcessing.csproj
       - run: dotnet test --no-build S3ImageProcessing/S3ImageProcessing.Test
