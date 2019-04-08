@@ -8,4 +8,4 @@ jobs:
       - run: find .
       - run: dotnet restore S3ImageProcessing/S3ImageProcessing.sln
       - run: dotnet build S3ImageProcessing/S3ImageProcessing/S3ImageProcessing.csproj
-      - run: dotnet test --no-build S3ImageProcessing/S3ImageProcessing.Test
+      - run: dotnet test --no-build S3ImageProcessing/S3ImageProcessing.Tests/S3ImageProcessing.Tests.csproj
